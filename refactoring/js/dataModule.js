@@ -6,15 +6,19 @@ const data = {
 }
 
 function calculateTotalLength() {
-    let total = 0
+    // let total = 0
 
-    // Iterate trough movies and calculate length
-    data.movies.forEach(function (currentMovie) {
-        total += currentMovie.length
-    })
+    // // Iterate trough movies and calculate length
+    // data.movies.forEach(function (currentMovie) {
+    //     total += currentMovie.length
+    // })
+
+    const fullTotal = data.movies.reduce((total, currentMovie) => {
+        return (total += currentMovie.length)
+    }, 0)
 
     // Set our new total to our data object
-    data.totalMoviesLength = total
+    data.totalMoviesLength = fullTotal
 }
 
 // Functions to be exported to public

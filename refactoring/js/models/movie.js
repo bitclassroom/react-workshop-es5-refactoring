@@ -4,7 +4,7 @@ class Movie {
 
         // this.title = movieObj.title
         this.title = title
-        this.length = length
+        this.length = Number.parseInt(length)
         this.genre = genre
     }
 
