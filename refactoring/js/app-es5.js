@@ -1,76 +1,98 @@
-var dataController = (function () {
-
-    var data = {
+const dataController = (function () {
+    const data = {
         movies: [],
-        totalMoviesLength: 0
-    };
-
-    // Movie constructor
-    function Movie(title, length, genre) {
-        this.title = title;
-        this.length = length;
-        this.genre = genre;
+        totalMoviesLength: 0,
     }
 
-    Movie.prototype.getInfo = function () {
-        return this.title + ", duration: " + this.length + "min, genre: " + getGenreAbbreviation(this.genre);
+    class Movie {
+        constructor(movieObj) {
+            const { title = 'n/a', length, genre } = movieObj
+
+            // this.title = movieObj.title
+            this.title = title
+            this.length = length
+            this.genre = genre
+        }
+
+        getInfo() {
+            return `${this.title}, duration: ${this.length}min, genre:
+        ${getGenreAbbreviation(this.genre)}`
+        }
     }
+
+    function myFunc() {
+        console.log('arguments', arguments)
+    }
+
+    myFunc(0, 32, 234, 234, 3242)
+
+    // // Movie constructor
+    // function Movie(title, length, genre) {
+    //     this.title = title
+    //     this.length = length
+    //     this.genre = genre
+    // }
+
+    // Movie.prototype.getInfo = function () {
+    //     return `${this.title}, duration: ${this.length}min, genre:
+    //     ${getGenreAbbreviation(this.genre)}`
+    // }
 
     // Private functions used within this module
     // Not exposed to the public
-    function getGenreAbbreviation(genreStr) {
-        var firstIndex = 0;
-        var lastIndex = genreStr.length - 1
-        var output = genreStr.charAt(firstIndex) + genreStr.charAt(lastIndex);
-        return output.toUpperCase();
+    function getGenreAbbreviation(genreStr = 'n/a') {
+        // genreStr = genreStr || 'n/a'
+
+        const firstIndex = 0
+        const lastIndex = genreStr.length - 1
+        const output = genreStr.charAt(firstIndex) + genreStr.charAt(lastIndex)
+        return output.toUpperCase()
     }
 
     function calculateTotalLength() {
-        var total = 0;
+        let total = 0
 
         // Iterate trough movies and calculate length
         data.movies.forEach(function (currentMovie) {
-            total += currentMovie.length;
-        });
+            total += currentMovie.length
+        })
 
         // Set our new total to our data object
-        data.totalMoviesLength = total;
+        data.totalMoviesLength = total
     }
 
     // Functions to be exported to public
-    function addMovie(title, length, genre) {
-        var movie = new Movie(title, parseFloat(length), genre);
+    function addMovie(title = 'unknown', length = '0', genre = 'unknown') {
+        // const movie = new Movie(title, parseFloat(length), genre)
+        const movie = new Movie({ title, genre, length })
 
-        data.movies.push(movie);
+        data.movies.push(movie)
 
-        return movie;
+        return movie
     }
 
     function getTotalLength() {
-
         // calculate total data before returning
-        calculateTotalLength();
+        calculateTotalLength()
 
-        return data.totalMoviesLength;
+        return data.totalMoviesLength
     }
 
     // This is only for TEST
     function logData() {
-        console.log(data);
+        console.log(data)
     }
 
     return {
-        addMovie: addMovie,
-        getTotalLength: getTotalLength,
+        addMovie,
+        getTotalLength,
         // ONLY FOR TEST
-        log: logData
-    };
+        log: logData,
+    }
+})()
 
-})();
-
-var UIController = (function () {
-
-    var DOMStrings = {
+const UIController = (function () {
+    const DOMStrings = {
         inputTitle: '.movie-title',
         inputLength: '.movie-length',
         selectGenre: '.genre-select',
@@ -78,141 +100,143 @@ var UIController = (function () {
         containerError: '.movie-error',
         buttonAddMovie: '.create-movie',
         formElement: 'form',
-        containerTotalLength: '.total-length span'
+        containerTotalLength: '.total-length span',
     }
 
     function collectInput() {
-        var titleElement = document.querySelector(DOMStrings.inputTitle);
-        var lengthElement = document.querySelector(DOMStrings.inputLength);
-        var genreSelectElement = document.querySelector(DOMStrings.selectGenre);
-        var genreOptionElement = genreSelectElement.options[genreSelectElement.selectedIndex];
+        const titleElement = document.querySelector(DOMStrings.inputTitle)
+        const lengthElement = document.querySelector(DOMStrings.inputLength)
+        const genreSelectElement = document.querySelector(DOMStrings.selectGenre)
+        const genreOptionElement =
+            genreSelectElement.options[genreSelectElement.selectedIndex]
 
-        var result = {
+        const result = {
             title: titleElement.value,
             length: lengthElement.value,
-            genre: genreOptionElement.value
+            genre: genreOptionElement.value,
         }
 
-        return result;
+        return result
     }
 
     function displayListItem(movie) {
-        var listEl = document.querySelector(DOMStrings.containerMovieList);
+        const listEl = document.querySelector(DOMStrings.containerMovieList)
 
-        var htmlItem = "<li>" + movie.getInfo(); + "</li>"
+        const htmlItem = '<li>' + movie.getInfo()
+        ;+'</li>'
 
-        listEl.insertAdjacentHTML('beforeend', htmlItem);
+        listEl.insertAdjacentHTML('beforeend', htmlItem)
     }
 
     function clearFormInputs() {
-
         // Reset forma data
-        document.querySelector(DOMStrings.formElement).reset();
+        document.querySelector(DOMStrings.formElement).reset()
 
         // Reset error if any
-        document.querySelector(DOMStrings.containerError).textContent = "";
+        document.querySelector(DOMStrings.containerError).textContent = ''
 
         // Set focus to title input
-        document.querySelector(DOMStrings.inputTitle).focus();
+        document.querySelector(DOMStrings.inputTitle).focus()
     }
 
     function showError(input) {
-        var errorMsg = 'Unknown error!';
+        let errorMsg = 'Unknown error!'
 
         if (!input.title) {
-            errorMsg = "Enter title!"
+            errorMsg = 'Enter title!'
         } else if (!input.length) {
-            errorMsg = "Enter length!"
+            errorMsg = 'Enter length!'
         } else if (!input.genre) {
-            errorMsg = "Select genre!"
+            errorMsg = 'Select genre!'
         }
 
-        document.querySelector(DOMStrings.containerError).textContent = errorMsg;
+        document.querySelector(DOMStrings.containerError).textContent = errorMsg
     }
 
     function displayTotalLength(tLength) {
-
         // If length is not passed set default value
-        tLength = tLength || '-';
+        tLength = tLength || '-'
 
-        document.querySelector(DOMStrings.containerTotalLength).textContent = String(tLength);
+        document.querySelector(DOMStrings.containerTotalLength).textContent = String(
+            tLength
+        )
     }
 
     function getDOMStrings() {
-        return DOMStrings;
+        return DOMStrings
     }
 
     return {
+        displayListItem,
+        displayTotalLength,
+        getDOMStrings,
         getInput: collectInput,
-        displayListItem: displayListItem,
-        displayTotalLength: displayTotalLength,
-        getDOMStrings: getDOMStrings,
         clearInputs: clearFormInputs,
-        displayError: showError
-    };
+        displayError: showError,
+    }
+})()
 
-})();
-
-var mainController = (function (dataCtrl, UICtrl) {
-
+const mainController = (function (dataCtrl, UICtrl) {
     function setupEventListeners() {
-        var DOM = UICtrl.getDOMStrings();
+        const DOM = UICtrl.getDOMStrings()
 
-        document.querySelector(DOM.buttonAddMovie).addEventListener('click', function () {
-            ctrlAddMovieItem();
-        });
+        document
+            .querySelector(DOM.buttonAddMovie)
+            .addEventListener('click', ctrlAddMovieItem)
 
-        document.addEventListener('keydown', function (event) {
+        document.addEventListener('keydown', (event) => {
             if (event.keyCode === 13) {
-                ctrlAddMovieItem();
+                ctrlAddMovieItem()
             }
-        });
+        })
     }
 
     function ctrlUpdateTotalLength() {
-
         // 1. Get calculated length
-        var totalLength = dataCtrl.getTotalLength();
+        const totalLength = dataCtrl.getTotalLength()
 
         // 2. Update the UI with new total length
-        UICtrl.displayTotalLength(totalLength);
+        UICtrl.displayTotalLength(totalLength)
     }
 
-    function ctrlAddMovieItem() {
+    const ctrlAddMovieItem = () => {
         // 1. get form data (UI)
-        var input = UICtrl.getInput();
+        const input = UICtrl.getInput()
+        const { title, length, genre } = input
+        // const title = input.title
+        // const length = input.length
+        // const  genre = input.genre
+
         // console.log(input);
 
         // 1.1 Validate data validity
-        if (!input.title || !input.length || !input.genre) {
+        if (!title || !length || !genre) {
             // throw new Error('Something bad happened');
             // alert("Error!")
-            UICtrl.displayError(input);
-            return;
+            UICtrl.displayError(input)
+            return
         }
 
         // 2. Add movie to list
-        var movie = dataCtrl.addMovie(input.title, input.length, input.genre);
+        const movie = dataCtrl.addMovie(title, length, genre)
         // console.log(movie);
 
         // 3. Clear form inputs
-        UICtrl.clearInputs();
+        UICtrl.clearInputs()
 
         // 4. show list on UI
-        UICtrl.displayListItem(movie);
+        UICtrl.displayListItem(movie)
 
         // 5. Update total length UI
-        ctrlUpdateTotalLength();
-
+        ctrlUpdateTotalLength()
     }
 
     return {
-        init: function () {
-            console.log("App has started");
-            setupEventListeners();
-        }
+        init() {
+            console.log('App has started')
+            setupEventListeners()
+        },
     }
+})(dataController, UIController)
 
-})(dataController, UIController);
-
-mainController.init();
+mainController.init()

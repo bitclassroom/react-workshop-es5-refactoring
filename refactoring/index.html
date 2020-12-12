@@ -53,7 +53,15 @@
     </form>
 
     <!-- Include out JS file -->
-    <script src="./js/app-es5.js"></script>
+    <!-- <script src="./js/app-es5.js"></script> -->
+    <script type="module">
+        import { init } from "./js/ctrlModule.js"
+
+        window.addEventListener('DOMContentLoaded', (event) => {
+            console.log('DOM fully loaded and parsed')
+            init()
+        })
+    </script>
 </body>
 
 </html>
